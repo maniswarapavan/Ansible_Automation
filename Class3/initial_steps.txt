@@ -68,25 +68,34 @@ sudo su - ansible
 ssh-copy-id node1
 ssh-copy-id node2
 
-10.	Test the ssh keys are working or not ? how ?.ssh to node1,node2 servers,while logging it shouldn’t ask any password.
+10.	Test the ssh keys are working or not ? how ?.
+
+ssh to node1,node2 servers,while logging it shouldn’t ask any password.
 
 
-4	   Login into ansible server using ansible user
+11. Login into ansible server using ansible user
 
 
   # yum install ansible -y
                 
 	 
-Make sure python-paramiko dependency should also be installed. paramiko package after installed only we can maintain the older version clients.
+Make sure python-paramiko dependency should also be installed. 
+paramiko package after installed only we can maintain the older version clients.
+The paramiko transport is provided because many distributions, in particular EL6 and before do not support ControlPersist in their SSH implementations. This is needed on the Ansible control machine to be reasonably efficient with connections. Thus paramiko is faster for most users on these platforms.
 
-	python-httplib2   this package only helps to monitor the urls via ansible
-	python2-cryptography  this package will help you to validate and control all SSL certificates
+
+python-httplib2 --> this package only helps to monitor the urls via ansible
+
+python2-cryptography --> this package will help you to validate and control all SSL certificates
 	
-           Post ansible package installation try to test the ansible  weather working or not ?
-               ansible --version
+Post ansible package installation try to test the ansible  weather working or not ?
+
+ansible --version
 	 
-      If you get an error ,then update the cryptography package.
-         #yum update python-cryptography
+
+If you get an error ,then update the cryptography package.
+
+yum update python-cryptography
  
 5	Create your environment directories.
       Create dev directory. From ansible point of view this dev directory is considered as one environment.
@@ -145,216 +154,3 @@ source ~/.vimrc
 8.1 .  ansible-doc -l
 
 
-9. simple playbook
-
-vim httpd.yaml
----
-- name: install httpd
-  hosts: all
-  tasks:
-   - name: install httpd
-     yum:
-	  name: httpd
-	  state: latest
-
-ansible-playbook httpd.yaml --syntax-check
-ansible-playbook httpd.yaml -C
-ansible-playbook httpd.yaml
-
-
-10.
-
-
-- name: Install a list of packages
-  yum:
-    name:
-      - httpd
-      - unzip
-    state: present
-	
-11. simple playbook
-
-vim httpd.yaml
----
-- name: install httpd
-  hosts: all
-  tasks:
-   - name: install httpd
-     yum:
-	  name: httpd
-	  state: latest
-   - name: restart web service
-	 service:
-	  name: httpd
-	  state: restarted
-	  
-	  
-12. simple playbook
-
-vim httpd.yaml
----
-- name: install httpd
-  hosts: all
-  tasks:
-   - name: install httpd
-     yum:
-	  name: httpd
-	  state: latest
-   - name: restart web service
-	 service:
-	  name: httpd
-	  state: restarted
-   - name: install vsftpd
-     yum:
-	  name: vsftpd
-	  state: latest
-   - name: restart web service
-	 service:
-	  name: vsftpd
-	  state: restarted
-	  
-	  
-	  
-
-13. handler playbook
-
-vim httpd.yaml
----
-- name: install httpd
-  hosts: all
-  tasks:
-   - name: install httpd
-     yum:
-	  name: httpd
-	  state: latest
-	 notify:
-	  - restart web service
-   handlers:
-    - name: restart web service
-	  service:
-	   name: httpd
-	   state: restarted
-
-
-13. Local Variable
-
-vim httpd.yaml
----
-- name: install httpd
-  hosts: all
-  vars:
-   - webpackage: httpd
-   - ftppackage: vsftpd
-  tasks:
-   - name: install httpd
-     yum:
-	  name: {{ webpackage }}
-	  state: latest
-   - name: restart web service
-	 service:
-	  name: {{ webpackage }}
-	  state: restarted
-   - name: install vsftpd
-     yum:
-	  name: {{ webpackage }}
-	  state: latest
-   - name: restart web service
-	 service:
-	  name: {{ webpackage }}
-	  state: restarted
-	  
-	  
-	  
-	  
-[db]
-node1
-
-[app]
-node2
-
-[prod]
-node1
-node2
-
-[all:vars]
-pkg=vsftpd
-
-
-14.tags
-
-
-TAGS when there is many playbook, we just need to specifying and execute one particular playbook then use the TAG module
-
-[ansible@ansible dev]$ vim tags.yaml
----
-- name: Tags module usage
-  hosts: all
-  tasks:
-   - name: VSTPD Installation
-     yum:
-      name: vsftpd
-      state: latest
-   - name: to start vsftpd service
-     service:
-      name: vsftpd
-      state: restarted
-   - name: add contents using copy modules
-     copy:
-      content:"i am sleeping"
-	   dest: /tmp/gh
-     tags:
-      - CNL			# just provide the tag name, now the copy play is marked with the tag for us to call that module to execute'
-	…
-
-15. Create a ansible.yml file
-a. It has to run all the managed nodes and place it in /var/tmp/hostinfo.html
-b. It has to provide the below system information in a single line for the respective nodes
-i. hostname
-ii. processorcount
-iii. DefaultIPV4Address
-iv. DefaultMACAddress
-
-ansible.yml
-
----
-- name: Check the system info
-  hosts: test
-  tasks:
-   - name: Check the system info
-     copy:
-      content: "{{ ansible_hostname }} \n {{ ansible_processor_count }} \n {{ ansible_default_ipv4.address }} \n {{ ansible_default_ipv4.macaddress }}\n"
-      dest: /var/tmp/hostinfo.html
-      mode: 0644
-	  
-	  
-16. Create a dummy.yml file
-a. Node1 and Node 2 should be in production, node3 and node4 should be in backup
-b. It has to copy the file from /tmp/answer.txt and place it in /var/tmp/answer.txt when it
-run – nodegroup1 as a tag for production
-c. It has to copy the file from /tmp/answer.txt and place it in /var/tmp/answer2.txt when
-it run – nodegroup2 as a tag for backup
- 
-
- 
----
-- name: Copy
-  hosts: production,backup
-  tasks:
-   - name: Copy
-     copy:
-      src: /tmp/answer.txt
-      dest: /var/tmp/answer.txt
-      mode: 0644
-     when: inventory_hostname in groups ['production']
-     tag:
-      - nodegroup1
-   - name: Copy
-     copy:
-      src: /tmp/answer.txt
-      dest: /var/tmp/answer2.txt
-      mode: 0644
-     when: inventory_hostname in groups ['backup']
-     tag:
-      - nodegroup2
-	  
-	  
