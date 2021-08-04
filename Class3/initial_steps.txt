@@ -1,8 +1,32 @@
-We need the following lab setup with centos7 with minimal install only
- 
+To start this handson lab,you need following resources.
+
+1. Google cloud (or any other cloud or some VM's from your local machine).
+
+
+*******************************************************************************************************************
+prerequisites
+
 1.	server.cnl.com – 1 CPU – 1GB RAM (Python 2.7)
 2.	node1.cnl.com – 1 CPU – 1GB RAM ( python 2.6 and above)
 3.	node2.cnl.com – 1 CPU – 1GB RAM ( python 2.6 and above)
+
+*******************************************************************************************************************
+Step 1 : Pre-requisites  - in all 3 machines
+Step 2 : Install vim package in all 3 machines
+Step 3:  DNS Setup (or) Ensure you have all 3 machines DNS is working	
+Step 4:  SSH connection need to be enabled if you are using cloud machines
+Step 5:  Create user called ansible in all machines
+Step 6:  Login to all servers and enable sudo permission for ansible user with no password
+Step 7:  Login as ansible user into ansible server 
+Step 8:  Create ssh keys in ansible server
+Step 9:  Copy SSH keys from ansible server to clients
+Step 10:  Test the ssh keys are working or not ? how ?.
+Step 11:  Install Ansible in Ansible server
+Step 12:  Create your environment directories.
+Step 13:  Test your ansible environment is correctly configured or not ?
+Step 14:  Test your client servers connectivity from ansible ?
+Step 15:  Configure VIM Editor purpose .To Avoid intend issues
+*******************************************************************************************************************
 
 Pre-requisites  - in all 3 machines
 
@@ -11,19 +35,23 @@ Pre-requisites  - in all 3 machines
 # yum install epel-release -y
 
 systemctl disable firewalld;systemctl stop firewalld
-
+*******************************************************************************************************************
 2.	Install vim package in all 3 machines
 
 # yum install vim -y
+*******************************************************************************************************************
+3. DNS Setup (or) Ensure you have all 3 machines DNS is working	
 
-3.	Add the following in /etc/hosts file in all 3 machines (only need this step if you create your ansible lab in your local laptop)
+Add the following in /etc/hosts file in all 3 machines (only need this step if you create your ansible lab in your local laptop)
 
 192.168.93.11		server.cnl.com	server
 192.168.93.12		node1.cnl.com	node1
 192.168.93.13		node2.cnl.com	node2
 
+*******************************************************************************************************************
+4. SSH connection need to be enabled if you are using cloud machines
 
-3.1. in all 3 machines go to /etc/ssh/sshd_config file using vim editor.
+in all 3 machines go to /etc/ssh/sshd_config file using vim editor.
 
 vim /etc/ssh/sshd_config
 
@@ -32,48 +60,53 @@ PasswordAuthentication yes --> this line should be un commented
 #PermitEmptyPasswords no
 #PasswordAuthentication no --> this line should be commented
 
-3.2. In all 3 machines now you restart sshd service
+In all 3 machines now you restart sshd service
 
 systemctl restart sshd
+*******************************************************************************************************************
 
-
-4.	Create user called ansible in all machines
+5.	Create user called ansible in all machines
 #useradd ansible
 
-5.	Set password for ansible user in all machines
+Set password for ansible user in all machines
 #passwd ansible
 
-Enter the password as Redhat
+Enter the password as cnl12345
 
-6.	Login to all servers and enable sudo permission for ansible user with no password
+*******************************************************************************************************************
+6. Login to all servers and enable sudo permission for ansible user with no password
 
 Run visudo command
 
 ansible ALL=(ALL)       NOPASSWD:       ALL
+*******************************************************************************************************************
 
-
-7.	Login as ansible user into ansible server - 
+7. Login as ansible user into ansible server 
 
 
 sudo su - ansible
+*******************************************************************************************************************
 
-
-8.	Create ssh keys in ansible server
+8. Create ssh keys in ansible server
 
 [ansible@server ~]$ ssh-keygen
 
- 
-9.	From ansible server,from ansible user using ssh-copy-id command exchange the ssh keys to node1,node2 servers.
+*******************************************************************************************************************
+9. Copy SSH keys from ansible server to clients
+
+From ansible server,from ansible user using ssh-copy-id command exchange the ssh keys to node1,node2 servers.
 
 ssh-copy-id node1
 ssh-copy-id node2
-
+*******************************************************************************************************************
 10.	Test the ssh keys are working or not ? how ?.
 
 ssh to node1,node2 servers,while logging it shouldn’t ask any password.
 
+*******************************************************************************************************************
+11. Install Ansible in Ansible server
 
-11. Login into ansible server using ansible user
+Login into ansible server using ansible user
 
 
   # yum install ansible -y
@@ -96,24 +129,28 @@ ansible --version
 If you get an error ,then update the cryptography package.
 
 yum update python-cryptography
+*******************************************************************************************************************
+12. Create your environment directories.
+
+  
+Create dev directory. From ansible point of view this dev directory is considered as one environment.
+Create ansible.cfg file like below
  
-5	Create your environment directories.
-      Create dev directory. From ansible point of view this dev directory is considered as one environment.
- Create ansible.cfg file like below
-   Vim ansible.cfg
+   vim ansible.cfg
       [defaults]
       inventory=hosts
       remote_user=ansible
       timeout=3000
-  in hosts file add your servers like below. (static inventory file)
+      
+in hosts file add your servers like below. (static inventory file)
   
-Vim hosts
- [prod]
+vim hosts
+[prod]
 node1
 [backup]
 node2
-
-6	Test your ansible environment is correctly configured or not ?
+*******************************************************************************************************************
+13. Test your ansible environment is correctly configured or not ?
 ansible all --list
 
 [root@server dev]# ansible all --list
@@ -121,15 +158,15 @@ ansible all --list
     node1
     node2
 	
-	
-7	Test your client servers connectivity from ansible ?
+*******************************************************************************************************************	
+14. Test your client servers connectivity from ansible ?
 
 
 ansible all -m ping  --> you must receive ping / pong in green
 
+*******************************************************************************************************************
 
-
-8. Now before playbook
+15. Configure VIM Editor purpose .To Avoid intend issues
 
 you must do this in ansible server only
 
@@ -148,9 +185,3 @@ save this file .Then logoff and login .
 Or 
 
 source ~/.vimrc
-
-
-
-8.1 .  ansible-doc -l
-
-
