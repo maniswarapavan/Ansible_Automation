@@ -108,7 +108,7 @@ ssh to node1,node2 servers,while logging it shouldn’t ask any password.
 Login into ansible server using ansible user
 
 
-  # yum install ansible -y
+sudo yum install ansible -y
                 
 	 
 Make sure python-paramiko dependency should also be installed. 
