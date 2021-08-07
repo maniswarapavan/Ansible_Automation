@@ -1,0 +1,70 @@
+ansible-doc -l
+
+
+9. simple playbook
+
+vim httpd.yaml
+---
+- name: install httpd
+  hosts: all
+  tasks:
+   - name: install httpd
+     yum:
+	  name: httpd
+	  state: latest
+
+ansible-playbook httpd.yaml --syntax-check
+ansible-playbook httpd.yaml -C
+ansible-playbook httpd.yaml
+
+
+10.
+
+
+- name: Install a list of packages
+  yum:
+    name:
+      - httpd
+      - unzip
+    state: present
+	
+11. simple playbook
+
+vim httpd.yaml
+---
+- name: install httpd
+  hosts: all
+  tasks:
+   - name: install httpd
+     yum:
+	  name: httpd
+	  state: latest
+   - name: restart web service
+	 service:
+	  name: httpd
+	  state: restarted
+	  
+	  
+12. simple playbook
+
+vim httpd.yaml
+---
+- name: install httpd
+  hosts: all
+  tasks:
+   - name: install httpd
+     yum:
+	  name: httpd
+	  state: latest
+   - name: restart web service
+	 service:
+	  name: httpd
+	  state: restarted
+   - name: install vsftpd
+     yum:
+	  name: vsftpd
+	  state: latest
+   - name: restart web service
+	 service:
+	  name: vsftpd
+	  state: restarted
