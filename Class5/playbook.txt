@@ -121,6 +121,9 @@ Step 9:  httpd installation playbook and error (privilege_escalation)
       state: latest
 
  
+ open putty ssh login window 1 from ansible client node1 --> tailf /var/log/messages 
+open putty ssh login window 1 from ansible client node2 --> watch -n 1 yum list httpd
+  
  You will receive the error when you execute the playbook.you must add the privilage_escalation section in ansible.cfg file
  
  vim ansible.cfg
