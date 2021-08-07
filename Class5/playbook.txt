@@ -29,7 +29,14 @@ Step 10:  copy paste playbooks from internet - How to avoid intending issues
 
 Step 1 : ansible-doc
 
-ansible-doc
+ansible-doc -l
+
+ansible-doc -l | wc -l
+
+ansible-doc -l | grep package
+
+ansible-doc yum
+
 *******************************************************************************************************************
 Step 2: .yaml or .yml files
 
