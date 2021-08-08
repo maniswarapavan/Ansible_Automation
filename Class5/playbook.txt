@@ -101,12 +101,12 @@ vim httpd.yaml
   tasks:
    - name: install httpd
      yum:
-	  name: httpd
-	  state: latest
+      name: httpd
+      state: latest
    - name: restart web service
-	 service:
-	  name: httpd
-	  state: restarted
+     service:
+      name: httpd
+      state: restarted
 	  
 *******************************************************************************************************************	  
 Step 9:  httpd installation playbook and error (privilege_escalation)
